@@ -1,0 +1,37 @@
+name: Build RYZE X APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Extract project
+        run: unzip RYZE_X_Android_Project.zip
+
+      - name: Build APK
+        run: |
+          cd RYZE_X_Android_Project
+          gradle --no-daemon :app:assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: RYZE-X-APK
+          path: RYZE_X_Android_Project/app/build/outputs/apk/debug/app-debug.apk
